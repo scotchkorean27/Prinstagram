@@ -6,17 +6,21 @@
 	<?php
 	include "connectdb.php";
 	include "session.php";
+	include "pics.php";
 
 	if(!isset($_SESSION["username"])){
-		//header("location: login.php");
+		header("location: login.php");
 		echo "<a href=\"login.php\">You Must Login</a><br \>";
 	}
 	else{
 		//TODO show some pictures
-		echo "donebuns <br />";
+		
+		loadPics();
+		
 		echo "<a href=\"logout.php\"> logout </a>";
 	}
 	?>
-	<h1>It is loaded</h1>
+
+	<img src="./assets/newtest.png" />
 </body>
 </html>
