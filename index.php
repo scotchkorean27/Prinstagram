@@ -21,6 +21,5 @@
 	}
 	?>
 
-	<img src="./assets/newtest.png" />
 </body>
 </html>
