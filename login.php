@@ -24,7 +24,6 @@ else{
 				$_SESSION["password"] = $password;
 				$_SESSION["REMOTE_ADDR"] = $_SERVER["REMOTE_ADDR"];
 				header("location: index.php");
-				echo "Holy Shit it worked!";
 				
 			}
 			else{

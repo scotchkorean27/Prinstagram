@@ -18,6 +18,7 @@
 		loadPics();
 		
 		echo "<a href=\"logout.php\"> logout </a>";
+		echo "<a href=\"friends.php\"> Manage Friends </a>";
 	}
 	?>
 
