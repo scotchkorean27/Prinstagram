@@ -7,7 +7,7 @@ include "connectdb.php";
 include "session.php";
 
 function createSelectionMenu(){
-	global $mysqli, $_SESSION;
+	global $mysqli, $_SESSION, $_GET;
 
 	echo "<form action=\"friends.php\" method=\"GET\" >\n<select name=\"gname\">";
 	echo "<option value=\"\"></option>\n";//a blank default is nice and makes the new group bit easier
@@ -17,7 +17,12 @@ function createSelectionMenu(){
 		$stmt->bind_result($GNOption);
 		while($stmt->fetch()) {
 			$GNOption = htmlspecialchars($GNOption);
-			echo "<option value='$GNOption'>$GNOption</option>\n";
+			if(isset($_GET["gname"]) && $_GET["gname"] == $GNOption){
+				echo "<option selected=\"selected\" value='$GNOption'>$GNOption</option>\n";
+			}
+			else{
+				echo "<option value='$GNOption'>$GNOption</option>\n";
+			}
 
 		}
 		$stmt->close();
@@ -37,11 +42,38 @@ function createNewGroupMenu(){
 	echo "</form>\n";
 }
 
+function addFriend($un, $gname){
+	global $mysqli, $_SESSION;
+	//check if this person is already in the group
+	if($stmt = $mysqli->prepare("SELECT gname 
+				FROM inGroup 
+				WHERE ownername = ? 
+				&& gname = ? 
+				&& username = ?"))
+	{
+		$stmt->bind_param("sss", $_SESSION["username"], $gname, $un);
+		$stmt->execute();
+		$stmt->store_result();
+		if($stmt->num_rows > 0){
+			return;	//I don't need or want to do anything if they have a friend of that name
+		}
+	}
+	$stmt->close();
+
+	//we have ensured that the there is not alread an entry (very sterling-style)
+	if($stmt = $mysqli->prepare("INSERT INTO `inGroup`(`ownername`, `gname`, `username`) VALUES (?, ?, ?)")){
+		if($stmt->bind_param("sss", $_SESSION["username"], $gname, $un)){
+			$stmt->execute();
+		}
+	}
+	$stmt->close();
+}
+
 function createFriendEditor(){
 	global $_GET, $_SESSION, $mysqli;	
-	
+
 	//makes a new freindGroup row if it is told to do so
-	if(isset($_GET["newGroup"])){
+	if(isset($_GET["newGroup"]) && $_GET["gname"] != ""){
 		//make a new group before engaging the editing
 		$query = "INSERT INTO `friendGroup` (`gname`, `descr`, `ownername`) VALUES (?, ?, ?);";
 		$stmt = $mysqli->prepare($query);
@@ -52,7 +84,7 @@ function createFriendEditor(){
 			//I think i'm done...
 		}
 	}
-	
+
 	//deletes freinds as needed
 	if(isset($_GET["target"])){
 		$query = "DELETE FROM inGroup WHERE ownername = ? && gname = ? && username = ?";
@@ -61,6 +93,39 @@ function createFriendEditor(){
 			$stmt->execute();
 		}
 	}
+	//add friend box/button
+	if( isset($_GET["nfname"]) && isset($_GET["nlname"]) ){
+		$query = "SELECT username FROM person WHERE fname = ? && lname = ?";
+		$stmt = $mysqli->prepare($query);
+		if($stmt){
+			$stmt->bind_param("ss",$_GET["nfname"], $_GET["nlname"]);
+			$stmt->execute();
+			$stmt->bind_result($un);
+			$stmt->store_result();
+
+			if($stmt->num_rows == 0){
+				//not found
+				echo "That person doesn't exist.<br />\n";
+			}
+			else if($stmt->num_rows == 1){
+				//got our guy
+				$stmt->fetch();
+				addFriend($un, $_GET["gname"]);
+
+			}
+			else if($stmt->num_rows > 1){
+				//too many results
+			}
+			$stmt->close();
+		}
+	}
+	
+	echo "<form action=\"friends.php\" method=\"GET\">\n";
+	echo "<input type=\"hidden\" name=\"gname\" value=\"{$_GET["gname"]}\" />\n";
+	echo "First Name: <input type=\"text\" name=\"nfname\" cols=15 /><br />\n";
+	echo "Last Name: <input type=\"text\" name=\"nlname\" cols=15 /><br />\n";
+	echo "<button type=\"submit\"> Add New Friend </button><br />\n";
+	echo "</form>\n";
 	
 	//when a group is selected generate a list of members
 	$query="SELECT fname, lname, username
@@ -83,11 +148,13 @@ function createFriendEditor(){
 		}
 	}
 
-	//add friend box/button
-	
+
+
 
 }
 
+
+//"main" method
 if(isset($_SESSION["username"])){
 	//display a menu of groups	
 	createSelectionMenu();
