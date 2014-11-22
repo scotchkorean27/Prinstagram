@@ -42,6 +42,36 @@ function createNewGroupMenu(){
 	echo "</form>\n";
 }
 
+function createGroupDeleter(){
+	global $mysqli, $_SESSION, $_GET;
+
+	echo "<form action=\"friends.php\" method=\"GET\">\n";
+	echo "<input type=\"hidden\" name=\"gname\" value=\"{$_GET["gname"]}\" />\n";
+	echo "<input type=\"hidden\" name=\"deleteGroup\" value=1 />\n";
+	echo "<button type=\"submit\"> Delete This Group </button>\n";
+	echo "</form>\n";
+
+	if(isset($_GET["deleteGroup"])){
+		//first empty the group
+		$query = "DELETE FROM inGroup WHERE gname = ? && ownername = ?";
+		if($stmt = $mysqli->prepare($query)){
+			$stmt->bind_param("ss", $_GET["gname"], $_SESSION["username"]);
+			$stmt->execute();
+		}
+		$stmt->close();
+		//then delete the group itself
+		$query="DELETE FROM friendGroup WHERE gname = ? && ownername = ?";
+		if($stmt = $mysqli->prepare($query)){
+			$stmt->bind_param("ss", $_GET["gname"], $_SESSION["username"]);
+			$stmt->execute();
+
+		}
+		$stmt->close();
+		header("location: friends.php");
+	}
+
+}
+
 function addFriend($un, $gname){
 	global $mysqli, $_SESSION;
 	//check if this person is already in the group
@@ -115,6 +145,25 @@ function createFriendEditor(){
 			}
 			else if($stmt->num_rows > 1){
 				//too many results
+				//check if there is unadd
+				if(isset($_GET["unt"])){
+					addFriend($_GET["unt"], $_GET["gname"]);
+				}
+				else{
+					echo "<form action=\"friends.php\" methog=\"GET\">\n";
+					echo "<input type=\"hidden\" name=\"gname\" value=\"{$_GET["gname"]}\" />";
+					echo "<input type=\"hidden\" name=\"nfname\" value=\"{$_GET["nfname"]}\" />";
+					echo "<input type=\"hidden\" name=\"nlname\" value=\"{$_GET["nlname"]}\" />";
+					echo "Please Select By Username: <select name=\"unt\">\n";
+					while($stmt->fetch()){
+						$option = htmlspecialchars($un);
+						echo "<option value=\"$option\">$option</option>\n";
+					}
+					echo "</select>\n";
+					echo "<button type=\"submit\"> Add </button>\n";
+					echo "</form>\n";
+
+				}
 			}
 			$stmt->close();
 		}
@@ -144,7 +193,7 @@ function createFriendEditor(){
 			echo "<input type=\"hidden\" name=\"target\" value=\"$un\" />\n";
 			echo "$fname $lname\n";
 			echo "<button type=\"submit\"> Defriend </button><br />\n";
-			echo "</form><br />\n";
+			echo "</form>\n";
 		}
 	}
 
@@ -158,9 +207,13 @@ function createFriendEditor(){
 if(isset($_SESSION["username"])){
 	//display a menu of groups	
 	createSelectionMenu();
+	
+	if(isset($_GET["gname"]) && $_GET["gname"] != ""){
+		createGroupDeleter();
+	}
 	createNewGroupMenu();
 
-	if(isset($_GET["gname"])){
+	if(isset($_GET["gname"]) && $_GET["gname"] != ""){
 		createFriendEditor();
 	}
 }
