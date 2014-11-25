@@ -2,9 +2,9 @@
 include "connectdb.php";
 include "session.php";
 
-function echoImg($img_file_name, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name){
+function echoImg($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name){
 	//TODO less awful display method
-	echo "<img src=\"./assets/$img_file_name\" /><br />";
+	echo "<img src=\"$img_file_name\" /><br />";
 }
 
 function loadSharedPics(){
@@ -18,7 +18,7 @@ function loadSharedPics(){
 	$stmt->execute();
 	$stmt->bind_result($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
 	while($stmt->fetch()){
-		echoImg($img_file_name, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
+		echoImg($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
 	}
 }
 //}
@@ -32,8 +32,7 @@ function loadPublicPics(){
 		$stmt->execute();
 		$stmt->bind_result($PID, $poster, $caption, $date, $lon, $lat, $loc, $public, $img_file_name);
 		while($stmt->fetch()){
-
-			echoImg($img_file_name);
+			echoImg($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
 		}
 	}
 }
@@ -43,6 +42,5 @@ function loadPics(){
 	loadSharedPics();
 }
 
-//REMOVE!
 //loadPics();
 ?>
