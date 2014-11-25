@@ -2,7 +2,7 @@
 <head>
 </head>
 <body>
-<?
+<?php
 include "connectdb.php";
 include "session.php";
 
