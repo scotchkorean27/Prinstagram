@@ -16,7 +16,25 @@ else{
     $pw = $_POST["password"];
     $fname = $_POST["fname"];
     $lname = $_POST["lname"];
-    if($stmt = $mysqli->prepare("SELECT * from person WHERE username = ?")){
+    if($uname == "" || $pw == "" || $fname == "" || $lname == ""){
+    	echo "Fill out ALL of the fields, ya dingus.";
+        echo '<form action = "register.php" method = "POST">';
+        echo "Please fill out ALL fields.<br>";
+        echo "Username:";
+        echo '<input type = "text" name = "username"><br>';
+        echo "Password:";
+        echo '<input type = "password" name = "password"><br>';
+        echo "First name:";
+        echo '<input type = "text" name = "fname"><br>';
+        echo "Last Name:";
+        echo '<input type = "text" name = "lname"><br>';
+        echo '<input type = "submit" value = "Register">';
+        echo '</form>';
+        echo '<form action = "login.php" method = "get">';
+          echo '<input type = "submit" value = "Return to Login">';
+        echo '</form>';
+    }
+    else if($stmt = $mysqli->prepare("SELECT * from person WHERE username = ?")){
       $stmt->bind_param('s', $uname);
       $stmt->execute();
       $stmt->bind_result($tmpuname);
