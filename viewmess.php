@@ -21,7 +21,7 @@
       echo '</form>'; 
       while($stmt->fetch()){
         echo "Message from " . $fname . " " . $lname . " (" . $sid . ") on " . $mdate . ": <br>";
-        echo $mess . "<br><br>";
+        echo htmlspecialchars($mess) . "<br><br>";
       }
       $stmt->close();
     }
