@@ -37,7 +37,6 @@ function isCaptionValid($str){
 	return strlen($str) <= 100 && strlen($str) > 0;
 }
 
-echo isUserNameValid("jlp") ? "t" : "f";
 
 ?>
 
