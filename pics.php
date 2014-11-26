@@ -9,21 +9,21 @@ function echoImage($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_n
 	echo "<p>";
 	echo htmlspecialchars($caption);
 	echo "</p>";
-	echo "<p> Posted by: $poster, On: $date, At: $loc ($long, $lat)</p>";
+	echo "<p> Posted by: $poster, On: $date, At: $loc ($lon, $lat)</p>";
 	echo "<p> Tagged: ";
 	//echoing the tagged people
-	$query = "SELECT fname, lname FROM tag JOIN photo ON taggee WHERE pid = ?";
+	$query = "SELECT fname, lname FROM tag JOIN person ON (taggee = username) WHERE pid = ?";
 	if($stmt = $mysqli->prepare($query)){
 		$stmt->bind_param("i", $PID);
 		$stmt->execute();
 		$stmt->bind_result($fn, $ln);
 		while($stmt->fetch()){
-			echo "$fn $ln, ";
+			echo "$fn $ln ";
 		}
 		$stmt->close();
 	}
 	else{
-		echo "no sql";
+		echo "no sql" . $mysqli->error;
 	}
 
 
@@ -43,6 +43,7 @@ function loadPics(){
 		$stmt->bind_param("ss", $_SESSION["username"], $_SESSION["username"]);
 		$stmt->execute();
 		$stmt->bind_result($PID, $poster, $caption, $date, $lon, $lat, $loc,$is_pub, $img_file_name);
+		$stmt->store_result();
 		while($stmt->fetch()){
 			echoImage($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
 		}
@@ -53,5 +54,5 @@ function loadPics(){
 	}
 }
 
-//loadPics();
+loadPics();
 ?>
