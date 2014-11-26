@@ -12,6 +12,7 @@ if(isset($_SESSION["username"])) {
 	header("location: index.php");
 }
 else{
+	echo "<a href=\"register.php\"> Register </a><br />";
 	//if the user have entered both entries in the form, check if they exist in the database
 	if(isset($_POST["username"]) && isset($_POST["password"])) {
 		$stmt = $mysqli->prepare("SELECT * FROM person WHERE username = ? && password = ?");
