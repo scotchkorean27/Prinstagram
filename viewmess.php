@@ -26,7 +26,7 @@
       $stmt->close();
     }
     else{
-      echo "You have no messages.";
+      echo "Could not access Qwitter database.";
       echo '<form action = "index.php" method = "get">';
         echo '<br><input type = "submit" value = "Go Back">';
       echo '</form>'; 
