@@ -5,7 +5,7 @@
  */
 
 function isUserNameValid($str){
-	$pattern = '/[a-zA-Z0-9]+/';
+	$pattern = '/^[a-zA-Z0-9]+$/';
 	$val = preg_match($pattern, $str);
 	if($val === FALSE){
 		throw new Exception("you goofs......");
@@ -36,6 +36,8 @@ function isQweetValid($str){
 function isCaptionValid($str){
 	return strlen($str) <= 100 && strlen($str) > 0;
 }
+
+echo isUserNameValid("jlp") ? "t" : "f";
 
 ?>
 
