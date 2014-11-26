@@ -19,7 +19,7 @@
       if(!isUserNameValid($taggee)){
         echo "Not a valid username!<br>";
       }
-      else if($stmt = $mysqli->prepare("select image from photo left join (shared natural join ingroup) on photo.pid = shared.pid where photo.pid = ? and (username = ? or is_pub = 1)")){
+      else if($stmt = $mysqli->prepare("select image from photo left join (shared natural join inGroup) on photo.pid = shared.pid where photo.pid = ? and (username = ? or is_pub = 1)")){
         $stmt->bind_param("is", $pid, $taggee);
         $stmt->execute();
         $stmt->bind_result($img);
@@ -59,7 +59,7 @@
         }
       }
     }
-    if($stmt = $mysqli->prepare("select image from photo left join (shared natural join ingroup) on photo.pid = shared.pid where photo.pid = ? and (username = ? or is_pub = 1)")){
+    if($stmt = $mysqli->prepare("select image from photo left join (shared natural join inGroup) on photo.pid = shared.pid where photo.pid = ? and (username = ? or is_pub = 1)")){
         $stmt->bind_param("is", $pid, $tagger);
         $stmt->execute();
         $stmt->bind_result($img);
