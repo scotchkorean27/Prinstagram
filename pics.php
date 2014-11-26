@@ -28,7 +28,7 @@ function echoImage($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_n
 
 
 	echo "</p>";
-	echo "<form action=\"maketag.php\" method=\"post\"><input type=\"hidden\" name=\"pid\" value=\"3346\" /><button type=\"submit\"> Add Tags </button></form>";
+	echo "<form action=\"maketag.php\" method=\"post\"><input type=\"hidden\" name=\"pid\" value=\"$PID\" /><button type=\"submit\"> Add Tags </button></form>";
 	echo "</div>";
 }
 
@@ -54,5 +54,5 @@ function loadPics(){
 	}
 }
 
-loadPics();
+//loadPics();
 ?>
