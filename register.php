@@ -51,7 +51,7 @@ else{
           $_SESSION["fname"] = $fname;
           $_SESSION["lname"] = $lname;
           $_SESSION["REMOTE_ADDR"] = $_SERVER["REMOTE_ADDR"];
-          echo '<form action = "index.php" method = "get">';
+          echo '<form action = "login.php" method = "get">';
             echo '<br><input type = "submit" value = "Proceed">';
           echo '</form>';  
         }
