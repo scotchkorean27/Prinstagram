@@ -23,6 +23,7 @@
         echo "Message from " . $fname . " " . $lname . " (" . $sid . ") on " . $mdate . ": <br>";
         echo $mess . "<br><br>";
       }
+      $stmt->close();
     }
     else{
       echo "You have no messages.";
