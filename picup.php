@@ -41,7 +41,7 @@ else{
 	if($_POST["gname"] == "Public"){
 		$pubvar = 1;
 	}
-	if(isCaptionValid($_POST["caption"]) && isCaptionValid($_POST["locname"])){
+	if(isCaptionValid($_POST["caption"]) && (isCaptionValid($_POST["locname"]) || $_POST["locname"] == "")){
 		if($stmt = $mysqli->prepare("INSERT INTO photo (poster, caption, pdate, lnge, lat, lname, is_pub, image) values (?, ?, NOW(), ?, ?, ?, ?, ?)")){
 			$stmt->bind_param("ssddsis", $_SESSION["username"], $_POST["caption"], $_POST["lon"], $_POST["lat"], $_POST["locname"], $pubvar, $tfile);
 			$stmt->execute();
