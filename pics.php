@@ -2,44 +2,55 @@
 include "connectdb.php";
 include "session.php";
 
-function echoImg($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name){
-	//TODO less awful display method
-	echo "<img src=\"$img_file_name\" /><br />";
-}
-
-function loadSharedPics(){
-	global $mysqli, $_SESSION;
-
-	$query = "SELECT pid, poster, caption, pdate, lnge, lat, lname, image 
-		FROM inGroup NATURAL JOIN shared NATURAL JOIN photo 
-		WHERE username = ?";
-
-	$stmt->bind_param("s",$_SESSION["username"]);
-	$stmt->execute();
-	$stmt->bind_result($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
-	while($stmt->fetch()){
-		echoImg($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
-	}
-}
-//}
-
-function loadPublicPics(){
-	//PHP has some of the dumbest scoping imaginable
+function echoImage($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name){
 	global $mysqli;
-
-	//load the public ones first (it's easier)
-	if($stmt = $mysqli->prepare("SELECT * FROM photo WHERE is_pub != 0")){
+	echo "<div style=\"width: 256px;padding: 5px;background-color: rgb(180, 180, 180);margin: 2px; float: left;\">";
+	echo "<img src=\"$img_file_name\" height=256 width=256 />";
+	echo "<p>";
+	echo htmlspecialchars($caption);
+	echo "</p>";
+	echo "<p> Posted by: $poster, On: $date, At: $loc ($long, $lat)</p>";
+	echo "<p> Tagged: ";
+	//echoing the tagged people
+	$query = "SELECT fname, lname FROM tag JOIN photo ON taggee WHERE pid = ?";
+	if($stmt = $mysqli->prepare($query)){
+		$stmt->bind_param("i", $PID);
 		$stmt->execute();
-		$stmt->bind_result($PID, $poster, $caption, $date, $lon, $lat, $loc, $public, $img_file_name);
+		$stmt->bind_result($fn, $ln);
 		while($stmt->fetch()){
-			echoImg($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
+			echo "$fn $ln, ";
 		}
+		$stmt->close();
 	}
+	else{
+		echo "no sql";
+	}
+
+
+	echo "</p>";
+	echo "<form action=\"maketag.php\" method=\"post\"><input type=\"hidden\" name=\"pid\" value=\"3346\" /><button type=\"submit\"> Add Tags </button></form>";
+	echo "</div>";
 }
 
 function loadPics(){
-	loadPublicPics();
-	loadSharedPics();
+	global $mysqli, $_SESSION;
+	$query = "select * from photo
+			where pid in 
+			(select pid from shared inner join inGroup
+			 where username = ?)
+			or is_pub = 1 or poster = ? order by pdate desc;";
+	if($stmt = $mysqli->prepare($query)){
+		$stmt->bind_param("ss", $_SESSION["username"], $_SESSION["username"]);
+		$stmt->execute();
+		$stmt->bind_result($PID, $poster, $caption, $date, $lon, $lat, $loc,$is_pub, $img_file_name);
+		while($stmt->fetch()){
+			echoImage($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_name);
+		}
+		$stmt->close();
+	}
+	else{
+		echo "no mysql";
+	}
 }
 
 //loadPics();
