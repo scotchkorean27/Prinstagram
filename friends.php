@@ -5,6 +5,7 @@
 <?
 include "connectdb.php";
 include "session.php";
+include "security.php";
 
 function createSelectionMenu(){
 	global $mysqli, $_SESSION, $_GET;
@@ -104,15 +105,25 @@ function createFriendEditor(){
 
 	//makes a new freindGroup row if it is told to do so
 	if(isset($_GET["newGroup"]) && $_GET["gname"] != ""){
-		//make a new group before engaging the editing
-		$query = "INSERT INTO `friendGroup` (`gname`, `descr`, `ownername`) VALUES (?, ?, ?);";
-		$stmt = $mysqli->prepare($query);
-		if($stmt){
-			$stmt->bind_param("sss", $_GET["gname"], $_GET["desc"], $_SESSION["username"]);
-			$stmt->execute();
-			$stmt->close();
-			//I think i'm done...
+		if( isGroupNameValid($_GET["gname"]) && isGroupDescValid($_GET["desc"]) ){
+			//make a new group before engaging the editing
+			$query = "INSERT INTO `friendGroup` (`gname`, `descr`, `ownername`) VALUES (?, ?, ?);";
+			$stmt = $mysqli->prepare($query);
+			if($stmt){
+				$stmt->bind_param("sss", $_GET["gname"], $_GET["desc"], $_SESSION["username"]);
+				$stmt->execute();
+				$stmt->close();
+				//I think i'm done...
+
+			}
+			else{
+				echo "mysql error";
+			}
 		}
+		else{
+			echo "invalid group name or description";
+		}
+
 	}
 
 	//deletes freinds as needed
@@ -168,14 +179,14 @@ function createFriendEditor(){
 			$stmt->close();
 		}
 	}
-	
+
 	echo "<form action=\"friends.php\" method=\"GET\">\n";
 	echo "<input type=\"hidden\" name=\"gname\" value=\"{$_GET["gname"]}\" />\n";
 	echo "First Name: <input type=\"text\" name=\"nfname\" cols=15 /><br />\n";
 	echo "Last Name: <input type=\"text\" name=\"nlname\" cols=15 /><br />\n";
 	echo "<button type=\"submit\"> Add New Friend </button><br />\n";
 	echo "</form>\n";
-	
+
 	//when a group is selected generate a list of members
 	$query="SELECT fname, lname, username
 		FROM person NATURAL JOIN (
@@ -207,7 +218,7 @@ function createFriendEditor(){
 if(isset($_SESSION["username"])){
 	//display a menu of groups	
 	createSelectionMenu();
-	
+
 	if(isset($_GET["gname"]) && $_GET["gname"] != ""){
 		createGroupDeleter();
 	}
