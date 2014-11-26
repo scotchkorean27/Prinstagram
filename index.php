@@ -14,12 +14,13 @@ if(!isset($_SESSION["username"])){
 }
 else{
 	//TODO add more links
-	echo "<a href=\"logout.php\"> logout </a>";
-	echo "<a href=\"friends.php\"> Manage Friends </a>";
-	echo "<a href=\"picpost.php\"> Upload Photos </a><br/>";
-	echo "<a href=\"sendmess.php\"> Send Qweet </a><br/>";
-	echo "<a href=\"viewmess.php\"> Check Qweets </a><br/>";
+	echo "<a href=\"logout.php\">logout</a>&nbsp";
+	echo "<a href=\"friends.php\">Manage Friends</a>&nbsp";
+	echo "<a href=\"picpost.php\">Upload Photos</a>&nbsp";
+	echo "<a href=\"sendmess.php\">Send Qweet</a>&nbsp";
+	echo "<a href=\"viewmess.php\">Check Qweets</a><br/>";
 
+	echo "<p>";
 	$notcount = 0;
 	if($stmt = $mysqli->prepare("SELECT count(*) from tag where taggee = ? and tstatus = 0")){
 		$stmt->bind_param('s', $_SESSION["username"]);
@@ -32,7 +33,9 @@ else{
 			echo "You have 1 tag awaiting approval";}
 		else{
 			echo " You have " . $notcount . " tags awaiting approval.";}
+		$stmt->close();
 	}
+	echo "</p>";
 
 	loadPics();
 }
