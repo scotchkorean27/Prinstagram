@@ -1,0 +1,160 @@
+Prinstagram/Qwitter Documentation:
+
+List of files:
+
+comments.php:
+
+Given a photo's pid, retrieves the relevent comments and allows user to comment
+
+connectdb.php:
+
+Connects to the database
+
+groups.php:
+
+Allows users to manage, remove, and create new groups, as well as adding and removing friends to and from these groups
+
+index.php:
+
+Loads pictures (and relevent data) with tags, contains hyperlinks to other pages
+
+login.php:
+
+Allows users to log in
+
+logout.php:
+
+Terminates the session
+
+maketag.php:
+
+Given a photo's pid, allows the user to tag other users (also checks for visibility/publicity)
+
+picpost.php:
+
+Contains the input form for uploading photos.  (Actual uploading happens in picup.php)
+
+pics.php:
+
+Retrieves photos and relevent data
+
+register.php:
+
+Allows new users to create accounts
+
+security.php:
+
+Contains functions for integrity checking, string sanitation, and charset enforcement
+
+sendmess.php:
+
+Contains Qweet sending functionality for the Qwitter service
+
+session.php:
+
+Does session things
+
+share.php:
+
+Allows users to share photos with friendgroups, as well as setting photo publicity
+
+viewmess.php:
+
+Retrieves top 100 messages (Qweets) for the Qwitter service
+
+viewtags.php:
+
+Retrieves unresolved tags, as well as allowing the user to accept or decline tag requests.
+
+
+
+Additional Features:
+
+Registration:
+Allows for the creation of accounts through the website, rather than going through the database
+
+Remove group:
+For those who just need a fresh start.  Allows users to drop entire groups.  Removes group members and photo sharing relations as per the foreign key constraints
+
+Qwitter:
+Allows users to send short messages to each other.  Only the top 100 are shown to the user.  A lightweight and hassle free way to send friendly messages to others.
+Designed for people saying "Hey!  I like your picture!" or "I'll send you a picture of my cat", not so much for people trying to sort out an existential crisis or longwinded discussions of politics and theology
+
+
+
+Database modifications:
+
+photo table:
+the image field uses VARCHAR(300) instead of medium blob
+
+pweets:
+New table.  Generating SQL shown below:
+create table pweets(
+  s_id varchar(30) NOT NULL,
+  r_id varchar(30) NOT NULL,
+  mess varchar(255) NOT NULL,
+  mdate datetime NOT NULL,
+  FOREIGN KEY (s_id) references person(username),
+  FOREIGN KEY (r_id) references person(username)
+);
+
+
+
+Qwitter, Defriend, Remove Group:
+
+Qwitter:
+Qwitter is a messaging service that runs largely separate from Prinstagram.
+Essentially, a user is promted for a username and a short message, and the service sents that message to the person with that username.
+Messages are limited to 255 characters, and users are only able to see the last 100 messages sent to them.
+Unlike messenger programs, the Qwitter communication service is not bidirectional.
+There is no direct channel for users to respond to Qweets, and as such, direct conversation is largely impractical.
+Ultimately, the system is closer to complementing someone while walking by than it is to convincing someone that two-part movies are pointless and shameless money grubbing schemes.
+
+Defriend:
+The act of defriending has three main considerations: removal from group, removal of tags, and removal of comments.
+The removal from the friendgroup is essential to defriending because...well, that's what it ultimately is.
+This does not mean that this person is removed from ALL friendgroups.  Rather, they are only removed from the selected friendgroup.
+The given system cascades tag changes upon defriending.
+This decision was based in the logic that there is ultimately no reason to keep the tag as the taggee can no longer view photos.
+When a person is defriended, tags pointing to that person will be removed from the photos that person can no longer see.
+However, it is important to note that because a person can be in more than one group, and that pictures can be shared in more than one group, defriending does not necessarily mean that person can no longer view the photo.
+As such, when a person is defriended, if a person can still see the photo (either because the photo is public or it is shared with them through another group), the tag remains unaffected.
+The given system does not cascade comment changes upon defriending.
+The logic behind this is simple:
+Removing all comments made by a single person on a picture creates the possibility that half of a conversation is removed from a picture.
+This directly affects user experience and makes for some confusing (albeit entertaining) one sided conversations that look vaguely like nonsensical rambling.
+As such, as far as the picture is concerned, the removed person can no longer interact with it, but it will not act as if that person was never able to interact with it.
+
+Remove Group:
+Dropping a group is, in many ways similar to defriending.
+Removing a group ultimately affects four tables in the database: friendGroup, inGroup, shared, and tags.
+The friendGroup changes are somewhat obvious.  Removing a group removes a group from the table.
+Due to a foreign key constraint, the inGroup table must be cleared of all references to the deleted group.
+The same applies to the shared table.
+When removing a group, a user is effectively unfriending every person in the removed group.
+Therefore, the defriending procedure must be taken with each person.
+All of the relevent tags are removed (as needed).
+
+
+
+Credits:
+
+John Pasquarello:
+comments.php - Commenting
+index.php - Basically home page design and implementation
+login.php - login/logout
+pics.php - picture retrieval
+security.php - XSS protection and string integrity enforcement
+share.php - photo sharing and management
+Integration and testing - Making sure all of the files play nice together
+Code polish - Making the code neater and overall less sinful
+
+Scott Lee:
+groups.php - Add/remove friends and groups
+maketag.php - Tagging photos
+picpost.php + picup.php - Uploading photos
+register.php - Registering new users
+sendmess.php - Sending Qweets
+viewmess.php - Viewing Qweets
+viewtags.php - Reviewing and approving/rejecting tag requests
+UI polish - Making the front end stuff more buttontastic
