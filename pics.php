@@ -28,7 +28,8 @@ function echoImage($PID, $poster, $caption, $date, $lon, $lat, $loc, $img_file_n
 
 
 	echo "</p>";
-	echo "<form action=\"maketag.php\" method=\"post\"><input type=\"hidden\" name=\"pid\" value=\"$PID\" /><button type=\"submit\"> Add Tags </button></form>";
+	echo "<form style=\"float: left;\" action=\"maketag.php\" method=\"post\"><input type=\"hidden\" name=\"pid\" value=\"$PID\" /><button type=\"submit\"> Add Tags </button></form>";
+	echo "<form style=\"float: left;\" action=\"comments.php\" method=\"get\"><input type=\"hidden\" name=\"pid\" value=\"$PID\" /><button type=\"submit\"> Discuss </button></form>";
 	echo "</div>";
 }
 
