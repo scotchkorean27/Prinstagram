@@ -140,6 +140,7 @@ else{
 						$stmt->execute();
 						$stmt->close();
 						echo "Group has been created!<br>";
+						addFriend($_SESSION["username"], $gname);
 					}
 				}
 			}
