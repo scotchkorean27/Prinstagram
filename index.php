@@ -15,7 +15,7 @@ if(!isset($_SESSION["username"])){
 else{
 	//TODO add more links
 	echo "<a href=\"logout.php\">logout</a>&nbsp";
-	echo "<a href=\"friends.php\">Manage Friends</a>&nbsp";
+	echo "<a href=\"groups.php\">Manage Friends</a>&nbsp";
 	echo "<a href=\"picpost.php\">Upload Photos</a>&nbsp";
 	echo "<a href=\"share.php\">Share Photos</a>&nbsp";
 	echo "<a href=\"sendmess.php\">Send Qweet</a>&nbsp";
