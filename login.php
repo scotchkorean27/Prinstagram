@@ -14,7 +14,7 @@ if(isset($_SESSION["username"])) {
 else{
 	
 	//if the user have entered both entries in the form, check if they exist in the database
-	if(isset($_POST["username"]) && isset($_POST["password"])) {
+	if(isset($_POST["username"]) && isset($_POST["password"]) && isUserNameValid($_POST["username"])) {
 		$stmt = $mysqli->prepare("SELECT * FROM person WHERE username = ? && password = ?");
 		if($stmt){
 			$stmt->bind_param("ss", $_POST["username"], md5($_POST["password"]));
