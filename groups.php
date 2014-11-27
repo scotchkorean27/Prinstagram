@@ -154,6 +154,7 @@ else{
 		echo "Add new person:<br>";
 		$gname = $_POST["gname"];
 		echo '<form action = "groups.php" method = "POST">';
+		echo '<input type = "hidden" name = "gname" value = "'.$_POST["gname"].'">';
 		echo "First Name:".'<input type = "text" name = "fname"><br>';
 		echo "Last Name: ".'<input type = "text" name = "lname"><br>';
 		echo '<input type = "submit" name = "nfriend" value = "Add friend"><br><br>';
