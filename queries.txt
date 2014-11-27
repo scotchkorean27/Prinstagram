@@ -1,0 +1,104 @@
+Scott Lee
+John Pasquarello
+
+Queries by use case:
+
+1. Login:
+
+"SELECT * FROM person WHERE username = ? && password = ?"
+user's username, user's password
+
+2. View photos
+
+Loading pictures:
+"select * from photo where pid in (select pid from shared inner join inGroup where username = ?) or is_pub = 1 or poster = ? order by pdate desc;"
+user's username, user's username
+
+Loading tags:
+"SELECT fname, lname FROM tag JOIN person ON (taggee = username) WHERE pid = ?"
+selected photo pid
+
+Loading comments:
+//John, I need you to put in the main query for this
+
+3. Tags
+
+View Proposed Tags:
+"select tag.pid, tagger, ttime, image from tag inner join photo on tag.pid = photo.pid where taggee = ? and tstatus = 0 order by ttime desc"
+user's username
+
+Accept Tag:
+"update tag set tstatus = 1 where pid = ? and tagger = ? and taggee = ?"
+tagged photo pid, tagger username, user's username
+
+Decline tag
+"delete from tag where pid = ? and tagger = ? and taggee = ?"
+tagged photo pid, tagger username, user's username
+
+4. Post a Photo:
+
+"INSERT INTO photo (poster, caption, pdate, lnge, lat, lname, is_pub, image) values (?, ?, NOW(), ?, ?, ?, ?, ?)"
+user's username, entered caption, entered longitude, entered latitude, entered location name, entered public boolean, file directory
+
+5. Tag a Photo:
+
+Visibility/Publicity check:
+"select image from photo left join (shared natural join inGroup) on photo.pid = shared.pid where photo.pid = ? and (username = ? or is_pub = 1)"
+selected photo's pid, user/target's username (as needed)
+
+Tag creation:
+Self tagging
+"INSERT INTO tag values (?, ?, ?, NOW(), 1)"
+Selected photo's pid, user's username, user's username
+
+Other tagging
+"INSERT INTO tag values (?, ?, ?, NOW(), 0)"
+Selected photo's pid, user's username, target's username
+
+
+6. Add Friend
+
+Already friended check:
+"SELECT gname FROM inGroup WHERE ownername = ? && gname = ? && username = ?"
+user's username, currently selected group name, target's username
+
+Friend Addition:
+"INSERT INTO `inGroup`(`ownername`, `gname`, `username`) VALUES (?, ?, ?)"
+user's username, currently selected group name, target's username
+
+First + Last name -> username conversion:
+"SELECT username FROM person WHERE fname = ? && lname = ?"
+target's first name, target's last namme
+
+7. Author's Choice (Qwitter)
+
+Retrieve Qweets:
+"select fname, lname, s_id, mess, mdate from pweets inner join person on s_id = username where r_id = ? order by mdate desc limit 100"
+user's username
+
+Send Qweets:
+"INSERT INTO pweets (s_id, r_id, mess, mdate) values (?, ?, ?, NOW())"
+user's username, target's username, entered message
+
+8. Defriend (Oh boy this is a doozy):
+
+Identify all pictures that the target needs to be untagged from (All photos that can no longer be seen by target, does not affect targets with more than one channel for viewing):
+"select pid from tag 
+	where taggee = ? 
+	and pid in 
+		( select pid from shared natural join inGroup 
+			where ownername = ? and gname = ?) 
+	and pid not in 
+		(select pid from shared natural join inGroup 
+			where ownername = ? and gname <> ? and username = ?)"
+target's username, user's username, affected friengroup name, user's username, affected friendgroup name, target's username
+
+Delete tags:
+"delete from tag where pid = ? and taggee = ?"
+selected picture's pid, target's username
+
+Remove from group:
+"delete from inGroup where ownername = ? and gname = ? and username = ?"
+user's username, affected group's name, target's username
+
+
