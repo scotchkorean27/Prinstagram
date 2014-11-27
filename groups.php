@@ -38,7 +38,7 @@
   
   function removeFriend($un, $gname){
     global $mysqli, $_SESSION;
-    if($stmt = $mysqli->prepare("select pid from tag where taggee = ? and pid in ( select pid from shared natural join ingroup where ownername = ? and gname = ?) and pid not in (select pid from shared natural join ingroup where ownername = ? and gname <> ? and username = ?)")){
+    if($stmt = $mysqli->prepare("select pid from tag where taggee = ? and pid in ( select pid from shared natural join inGroup where ownername = ? and gname = ?) and pid not in (select pid from shared natural join inGroup where ownername = ? and gname <> ? and username = ?)")){
       $stmt->bind_param("ssssss", $un, $_SESSION["username"], $gname, $_SESSION["username"], $gname, $un);
       $stmt->execute();
       $stmt->bind_result($pid);
@@ -56,7 +56,7 @@
           $stmt->close();
         }
       }
-      if($stmt = $mysqli->prepare("delete from ingroup where ownername = ? and gname = ? and username = ?")){
+      if($stmt = $mysqli->prepare("delete from inGroup where ownername = ? and gname = ? and username = ?")){
         $stmt->bind_param("sss", $_SESSION["username"], $gname, $un);
         $stmt->execute();
         $stmt->close();
@@ -125,7 +125,7 @@
       if(isGroupNameValid($_POST["gname"]) && $_POST["gname"] != "" && isGroupDescValid($_POST["desc"])){
         $gname = htmlspecialchars($_POST["gname"]);
         $desc = htmlspecialchars($_POST["desc"]);
-        if($stmt = $mysqli->prepare("SELECT gname from friendgroup where gname = ? and ownername = ?")){
+        if($stmt = $mysqli->prepare("SELECT gname from friendGroup where gname = ? and ownername = ?")){
           $stmt->bind_param("ss", $gname, $_SESSION["username"]);   
           $stmt->execute();
           $stmt->bind_result($tmpnm);
@@ -135,7 +135,7 @@
           }
           else{
             $stmt->close();
-            if($stmt = $mysqli->prepare("INSERT INTO friendgroup values (?, ?, ?)")){
+            if($stmt = $mysqli->prepare("INSERT INTO friendGroup values (?, ?, ?)")){
               $stmt->bind_param("sss", $gname, $desc, $_SESSION["username"]);
               $stmt->execute();
               $stmt->close();
@@ -162,7 +162,7 @@
       if($stmt = $mysqli->prepare("SELECT fname, lname, username
         FROM person NATURAL JOIN (
           SELECT username
-          FROM ingroup
+          FROM inGroup
           WHERE gname = ? and ownername = ?
             ) as mems")){
         $stmt->bind_param("ss", $_POST["gname"], $_SESSION["username"]);
@@ -185,7 +185,7 @@
       if($stmt = $mysqli->prepare("SELECT fname, lname, username
         FROM person NATURAL JOIN (
           SELECT username
-          FROM ingroup
+          FROM inGroup
           WHERE gname = ? and ownername = ?
             ) as mems")){
         $stmt->bind_param("ss", $_POST["gname"], $_SESSION["username"]);
@@ -205,7 +205,7 @@
           $stmt->execute();
           $stmt->close();
         }
-        if($stmt = $mysqli->prepare("delete from friendgroup where gname = ? and ownername = ?")){
+        if($stmt = $mysqli->prepare("delete from friendGroup where gname = ? and ownername = ?")){
           $stmt->bind_param("ss", $_POST["gname"], $_SESSION["username"]);
           $stmt->execute();
           $stmt->close();
@@ -227,7 +227,7 @@
       echo "Please choose a group to manage.<br>";
       echo '<form action = "groups.php" method = "POST">';
       echo '<select name = "gname">';
-      if ($stmt = $mysqli->prepare("select distinct gname from friendgroup where ownername=?")) {
+      if ($stmt = $mysqli->prepare("select distinct gname from friendGroup where ownername=?")) {
         $stuff = $_SESSION["username"];
         $stmt->bind_param("s", $stuff);
         $stmt->execute();
