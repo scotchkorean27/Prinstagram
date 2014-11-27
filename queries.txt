@@ -18,9 +18,6 @@ Loading tags:
 "SELECT fname, lname FROM tag JOIN person ON (taggee = username) WHERE pid = ?"
 selected photo pid
 
-Loading comments:
-//John, I need you to put in the main query for this
-
 3. Tags
 
 View Proposed Tags:
@@ -101,4 +98,20 @@ Remove from group:
 "delete from inGroup where ownername = ? and gname = ? and username = ?"
 user's username, affected group's name, target's username
 
+9. Commenting
 
+Add a Comment  (note this assumes the user's ability to see the photo has already been checked in the PHP file it is) :
+
+"INSERT INTO comment (ctime, ctext) VALUES (NOW(), ?)"
+The only input is the comment text
+
+"SELECT LAST_INSERT_ID()"
+this gets the most recently added CID
+
+"INSERT INTO commentOn (cid, pid, username) VALUES (?, ?, ?)"
+this adds the commentOn row. completing the insert
+
+View Comments  (note this assumes the user's ability to see the photo has already been checked in the PHP file it is) :
+
+"SELECT username, ctime, ctext FROM commentOn NATURAL JOIN comment WHERE pid = ?"
+The only input is the PID
